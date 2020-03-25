@@ -1,0 +1,27 @@
+{% load  static  %}
+<html>
+<head>
+  <!-- META DATA -->
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<title>Ctadas Blog</title>
+	<link rel="shortcut icon" href='{% static "images/house135.png" %}'>
+	<!-- Bootstrap Core CSS -->
+
+	<link rel="stylesheet" href='{% static "css/bootstrap.min.css" %}'  type="text/css">
+	{% block css %}{% endblock %}
+</head>
+	<body>
+		{% block body %}{% endblock %}
+
+		<!-- jQuery -->
+		<script type="text/javascript" src='{% static "js/jquery-2.1.1.js" %}'></script>
+		
+		{% block js %}{% endblock %}
+	</body>
+</body>
+</html>
