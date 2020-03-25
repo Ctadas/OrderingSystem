@@ -24,6 +24,7 @@ class Dishes(models.Model):
 	price = models.FloatField(verbose_name='价格')
 	discount_price = models.FloatField(verbose_name='折扣价格',blank = True)
 	img = models.ImageField(verbose_name='菜品图片',upload_to='dishes/')
+	shelves_status = models.BooleanField(verbose_name='是否上架',default=True)
 	stock = models.IntegerField(verbose_name='库存',default = 0)
 
 	def __str__(self):
