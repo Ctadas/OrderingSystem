@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/menu/index.css' %}">
+{% endblock %}
+
+{% block body %}
+	<input id="csrf_token" value="{{ csrf_token }}" hidden>
+	{% verbatim %}
+		<el-row id="menu_main" v-cloak>
+			<el-row  type="flex" justify="end">
+				<el-col :span=4>
+					<el-button size="small" type="primary" @click="show_classification_box=true">新增分类</el-button>
+					<el-button size="small" type="primary" @click="add_dishes">新增菜品</el-button>
+				</el-col>
+			</el-row>
+			<template>
+				<el-table :data="dishes_list">
+					<el-table-column label="菜品分类">
+						<template slot-scope="scope">
+							<span>{{ scope.row.classification_name }}</span>
+						</template>
+					</el-table-column>
+					<el-table-column label="菜品名称">
+						<template slot-scope="scope">
+							<el-image
+								style="width: 50px; height: 50px"
+								:src="scope.row.img"
+								fit="contain"
+								:preview-src-list="[scope.row.img]"></el-image>
+						</template>
+					</el-table-column>
+					<el-table-column label="菜品名称">
+						<template slot-scope="scope">
+							<span>{{ scope.row.name }}</span>
+						</template>
+					</el-table-column>
+					<el-table-column label="当前状态">
+						<template slot-scope="scope">
+							<span v-if="scope.row.shelves_status">上架中</span>
+							<span v-else>已下架</span>
+						</template>
+					</el-table-column>
+					<el-table-column label="价格">
+						<template slot-scope="scope">
+							<span>{{ scope.row.price }}</span>
+						</template>
+					</el-table-column>
+					<el-table-column label="折扣价格">
+						<template slot-scope="scope">
+							<span v-if="scope.row.discount_price">{{ scope.row.discount_price }}</span>
+							<span v-else>暂无折扣</span>
+						</template>
+					</el-table-column>
+					<el-table-column label="库存">
+						<template slot-scope="scope">
+							<span>{{ scope.row.stock }}</span>
+						</template>
+					</el-table-column>
+					<el-table-column label="是否上架">
+						<template slot-scope="scope">
+							<el-switch v-model="scope.row.shelves_status"></el-switch>
+						</template>
+					</el-table-column>
+					<el-table-column label="操作">
+						<template slot-scope="scope">
+							<el-button
+								size="mini"
+								@click="tableEdit(scope.row)">编辑</el-button>
+							<el-button
+								size="mini"
+								type="danger"
+								@click="tableDelete(scope.row)">删除</el-button>
+						</template>
+					</el-table-column>
+				</el-table>
+			</template>
+			<!-- 菜品编辑 -->
+			<el-dialog title="菜品信息"  :visible.sync="show_detail_box" id="detail_box" > 
+				<el-row>
+					<el-form id="upload_form" :model="detail_data" label-width="100px" ref="form">
+						<el-form-item label="菜品分类：">
+							<el-select name="classification" v-model="detail_data.classification" placeholder="菜品分类">
+								<el-option v-for="item in classification_list" :label="item.name" :value="item.id"></el-option>
+							</el-select>
+							<i class="el-icon-plus" style="color: #24d924;font-size: 25px;cursor: pointer;" @click="show_classification_box = true"></i>	
+						</el-form-item>
+						<el-form-item label="菜品名称：" prop="name">
+							<el-input v-model="detail_data.name" name="name"></el-input>
+						</el-form-item>
+						<el-form-item label="菜品价格：" prop="price">
+							<el-input v-model="detail_data.price" name="price"></el-input>
+						</el-form-item>
+						<el-form-item label="折扣价格：" prop="discount_price">
+							<el-input v-model="detail_data.discount_price" name="discount_price"></el-input>
+						</el-form-item>
+						<el-form-item label="是否上架：" prop="shelves_status">
+							<el-switch v-model="detail_data.shelves_status" name="shelves_status"></el-switch>
+						</el-form-item>
+						<el-form-item label="菜品库存：" prop="stock">
+							<el-input v-model="detail_data.stock" name="stock"></el-input>
+						</el-form-item>
+						<el-form-item label="菜品图片：" prop="img">
+							<el-upload
+								name="img"
+								ref="upload"
+								list-type="picture-card"
+								:class="{ disabled: uploadDisabled }"
+								:on-change="upload_change"
+								:on-remove="upload_remove"
+								:auto-upload="false"
+								:file-list="detail_fileList"
+								accept="image/*"
+								limit=1>
+								<i class="el-icon-plus" style="line-height: 146px"></i>
+							</el-upload>
+						</el-form-item>
+						<el-form-item>
+							<el-button type="primary" @click="detail_submit">提交</el-button>
+						</el-form-item>
+					</el-form>
+				</el-row>
+			</el-dialog>
+			<!-- 菜品编辑 -->
+			<el-dialog title="分类信息"  :visible.sync="show_classification_box" id="classification_box" > 
+				<el-row>
+					<el-form id="upload_form" :model="classification_data" label-width="100px" ref="form">
+						<el-form-item label="分类名称：" prop="name">
+							<el-input v-model="classification_data.name" name="name"></el-input>
+						</el-form-item>
+						<el-form-item>
+							<el-button type="primary" @click="classification_submit">提交</el-button>
+						</el-form-item>
+					</el-form>
+				</el-row>
+			</el-dialog>
+		</el-row>
+	{% endverbatim %}
+{% endblock %}
+
+{% block js %}
+	<script type="text/javascript" src='{% static "js/menu/index.js" %}'></script>
+{% endblock %}

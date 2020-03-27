@@ -22,7 +22,7 @@ class Dishes(models.Model):
 	classification = models.ForeignKey('FoodClassification',on_delete=models.CASCADE)
 	name = models.CharField(verbose_name='菜品名称',max_length = 50)
 	price = models.FloatField(verbose_name='价格')
-	discount_price = models.FloatField(verbose_name='折扣价格',blank = True)
+	discount_price = models.FloatField(verbose_name='折扣价格',blank = True,null =True)
 	img = models.ImageField(verbose_name='菜品图片',upload_to='dishes/')
 	shelves_status = models.BooleanField(verbose_name='是否上架',default=True)
 	stock = models.IntegerField(verbose_name='库存',default = 0)
