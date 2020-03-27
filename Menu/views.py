@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from Menu.models import Dishes,FoodClassification
 from django.shortcuts import render
-from Menu.serializers import DishesSerializers,FoodClassificationSerializers
+from Menu.serializers import DishesSerializers,FoodClassificationSerializers,StandardResultsSetPagination
 from rest_framework import mixins
 from rest_framework import generics
 
@@ -40,10 +40,21 @@ class FoodClassificationDetail(mixins.RetrieveModelMixin,
 class DishesList(mixins.ListModelMixin,
 				mixins.CreateModelMixin,
 				generics.GenericAPIView):
-	queryset = Dishes.objects.all()
+
+	model = Dishes
 	serializer_class = DishesSerializers
+	pagination_class = StandardResultsSetPagination
+
+	def get_queryset(self, *args, **kwargs):
+		return self.model.objects.all()
 
 	def get(self, request, *args, **kwargs):
+		print(1,request.GET.get('page'), args, kwargs)
+
+		if request.GET.get('page_size') == None and  request.GET.get('page') == None:
+			all_model = self.get_queryset()
+			self.paginator.page_size = len(all_model)
+
 		return self.list(request, *args, **kwargs)
 
 	def post(self, request, *args, **kwargs):
