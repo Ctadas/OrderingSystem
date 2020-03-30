@@ -74,6 +74,15 @@
 						</template>
 					</el-table-column>
 				</el-table>
+				<el-pagination
+					background
+					@size-change="pageSizeChange"
+					@current-change="pageCurrentChange"
+					:page-sizes="page_sizes"
+					:page-size="page_size"
+					layout=" prev, pager, next,total, sizes"
+					:total="page_total">
+				</el-pagination>
 			</template>
 			<!-- 菜品编辑 -->
 			<el-dialog title="菜品信息"  :visible.sync="show_detail_box" id="detail_box" > 

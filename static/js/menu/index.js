@@ -23,17 +23,28 @@ let vue_attr = {
 		show_classification_box : false,
 		// 分类数据
 		classification_data : {},
+		// 当前分页
+		page : 1,
+		// 分页总数
+		page_total: 0,
+		// 分页大小
+		page_size: 10,
+		// 分页页码大小
+		page_sizes: [10, 30, 50, 100],
 	},
 	methods: {
 		// 获取所有菜品
 		get_dishes_list:function(){
 			let vue = this;
+			let page = vue.page
+			let page_size = vue.page_size
 			$.ajax({
-				url : '/menu/dishes/',
+				url : '/menu/dishes_page/?page='+page+'&&page_size='+page_size,
 				type: 'get',
 				success : function(res){
 					if(res){
-						vue.dishes_list = res
+						vue.page_total = res.count
+						vue.dishes_list = res.results
 					}
 				}
 			});
@@ -50,6 +61,16 @@ let vue_attr = {
 					}
 				}
 			});
+		},
+		pageSizeChange:function(val){
+			let vue = this;
+			vue.page_size = val;
+			vue.get_dishes_list();
+		},
+		pageCurrentChange:function(val){
+			let vue = this;
+			vue.page = val;
+			vue.get_dishes_list();
 		},
 		// 上传按钮改变事件
 		upload_change:function(file, fileList){

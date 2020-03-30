@@ -12,8 +12,11 @@ def dishes_management(request):
 class FoodClassificationList(mixins.ListModelMixin,
 							mixins.CreateModelMixin,
 							generics.GenericAPIView):
-	queryset = FoodClassification.objects.all()
+	model = FoodClassification
 	serializer_class = FoodClassificationSerializers
+
+	def get_queryset(self, *args, **kwargs):
+		return self.model.objects.all()
 
 	def get(self, request, *args, **kwargs):
 		return self.list(request, *args, **kwargs)
@@ -25,8 +28,11 @@ class FoodClassificationDetail(mixins.RetrieveModelMixin,
 					mixins.UpdateModelMixin,
 					mixins.DestroyModelMixin,
 					generics.GenericAPIView):
-	queryset = FoodClassification.objects.all()
+	model = FoodClassification
 	serializer_class = FoodClassificationSerializers
+
+	def get_queryset(self, *args, **kwargs):
+		return self.model.objects.all()
 
 	def get(self, request, *args, **kwargs):
 		return self.retrieve(request, *args, **kwargs)
@@ -37,10 +43,8 @@ class FoodClassificationDetail(mixins.RetrieveModelMixin,
 	def delete(self, request, *args, **kwargs):
 		return self.destroy(request, *args, **kwargs)
 
-class DishesList(mixins.ListModelMixin,
-				mixins.CreateModelMixin,
-				generics.GenericAPIView):
-
+class DisheListPage(mixins.ListModelMixin,
+					generics.GenericAPIView):
 	model = Dishes
 	serializer_class = DishesSerializers
 	pagination_class = StandardResultsSetPagination
@@ -49,12 +53,19 @@ class DishesList(mixins.ListModelMixin,
 		return self.model.objects.all()
 
 	def get(self, request, *args, **kwargs):
-		print(1,request.GET.get('page'), args, kwargs)
+		return self.list(request, *args, **kwargs)
 
-		if request.GET.get('page_size') == None and  request.GET.get('page') == None:
-			all_model = self.get_queryset()
-			self.paginator.page_size = len(all_model)
+class DishesList(mixins.ListModelMixin,
+				mixins.CreateModelMixin,
+				generics.GenericAPIView):
 
+	model = Dishes
+	serializer_class = DishesSerializers
+
+	def get_queryset(self, *args, **kwargs):
+		return self.model.objects.all()
+
+	def get(self, request, *args, **kwargs):
 		return self.list(request, *args, **kwargs)
 
 	def post(self, request, *args, **kwargs):
@@ -64,8 +75,11 @@ class DishesDetail(mixins.RetrieveModelMixin,
 					mixins.UpdateModelMixin,
 					mixins.DestroyModelMixin,
 					generics.GenericAPIView):
-	queryset = Dishes.objects.all()
+	model = Dishes
 	serializer_class = DishesSerializers
+
+	def get_queryset(self, *args, **kwargs):
+		return self.model.objects.all()
 
 	def get(self, request, *args, **kwargs):
 		return self.retrieve(request, *args, **kwargs)
