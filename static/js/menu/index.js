@@ -39,7 +39,7 @@ let vue_attr = {
 			let page = vue.page
 			let page_size = vue.page_size
 			$.ajax({
-				url : '/menu/dishes_page/?page='+page+'&&page_size='+page_size,
+				url : '/menu/dishes_page/?page='+page+'&&page_size='+page_size+'/',
 				type: 'get',
 				success : function(res){
 					if(res){
@@ -111,9 +111,10 @@ let vue_attr = {
 			let ajax_type = vue.ajax_type
 			let url = '/menu/dishes/'
 
-			if(ajax_type == 'put'){
-				url = '/menu/dishes/'+id
+			if(ajax_type == 'PATCH'){
+				url = '/menu/dishes/'+id+'/'
 			}
+			console.log(url)
 			$.ajax({
 				url : url,
 				type: ajax_type,
@@ -161,9 +162,9 @@ let vue_attr = {
 		// 表格编辑按钮事件
 		tableEdit:function(data){
 			let vue = this;
-			vue.ajax_type = 'put'
+			vue.ajax_type = 'PATCH'
 			vue.detail_data = _.clone(data);
-			vue.detail_fileList = [{name:'img',url:data.img}]
+			vue.detail_fileList = [{name:'img',url:data.img,partial:true}]
 			vue.uploadDisabled = true;
 			vue.show_detail_box = true;
 		},
@@ -172,7 +173,7 @@ let vue_attr = {
 			let vue  = this;
 			let id = data.id;
 			$.ajax({
-				url : '/menu/dishes/'+id,
+				url : '/menu/dishes/'+id+'/',
 				type: 'delete',
 				headers: {'X-CSRFToken': vue.csrfmiddlewaretoken}, 
 				contentType: "application/json",

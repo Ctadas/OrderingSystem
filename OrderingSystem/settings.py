@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'Menu',
+    'PersonnelManagement',
 ]
 
 MIDDLEWARE = [
@@ -126,3 +127,19 @@ STATICFILES_DIRS = ( STATIC_PATH, )
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MEDIA_URL = '/media/'
+
+# # 验证登陆
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#         'rest_framework.authentication.BasicAuthentication',
+#         'rest_framework.authentication.SessionAuthentication',
+#         'rest_framework_simplejwt.authentication.JWTAuthentication',
+#     ]
+# }
+
+from datetime import timedelta
+SIMPLE_JWT = {
+    'USER_ID_FIELD': 'open_id',
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}

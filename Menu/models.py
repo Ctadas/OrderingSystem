@@ -33,6 +33,7 @@ class Dishes(models.Model):
 	class Meta:
 		verbose_name = '菜品'
 		verbose_name_plural = '菜品'
+		ordering = ['id']
 
 # 菜品模型初始化信号
 @receiver(post_init, sender=Dishes)
@@ -61,7 +62,7 @@ def delete_upload_files(sender, instance, **kwargs):
 	# 	del_url.append(os.path.join(settings.BASE_DIR, img_src).replace('\\','/'))
 	del_url.append(file_url.replace('\\','/'))
 	for durl in del_url:
-		if os.path.isfile(durl):
+		if os.path.isfile(durl): 
 			os.remove(durl)
 
 	del_empty_dir(settings.MEDIA_ROOT)

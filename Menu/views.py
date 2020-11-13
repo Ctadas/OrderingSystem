@@ -3,6 +3,14 @@ from Menu.models import Dishes,FoodClassification
 from django.shortcuts import render
 from Menu.serializers import DishesSerializers,FoodClassificationSerializers,StandardResultsSetPagination
 from rest_framework import mixins,generics,viewsets
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated,IsAuthenticatedOrReadOnly
+from rest_framework_simplejwt import authentication as jwt_authentication
+from rest_framework.response import Response
+
+from PersonnelManagement.models import Personnel
+from rest_framework import permissions
+
 
 def dishes_management(request):
 	return render(request, 'menu/index.html')
@@ -12,95 +20,43 @@ class FoodClassificationViewSet(viewsets.ModelViewSet):
 	queryset = FoodClassification.objects.all()
 	serializer_class = FoodClassificationSerializers 
 
+	authentication_classes = [SessionAuthentication, BasicAuthentication,jwt_authentication.JWTAuthentication]
+	permission_classes = [IsAuthenticated]
+
+
+class WXPermission(permissions.BasePermission):
+	"""
+	Global permission check for blacklisted IPs.
+	"""
+	def has_permission(self, request, view):
+		return True
+		
+class TestJWTAuthentication(jwt_authentication.JWTAuthentication):
+	def get_user(self, validated_token):
+		"""
+		Attempts to find and return a user using the given validated token.
+		"""
+		try:
+			user_id = validated_token[jwt_authentication.api_settings.USER_ID_CLAIM]
+		except KeyError:
+			raise InvalidToken(_('Token contained no recognizable user identification'))
+		try:
+			user = Personnel.objects.get(**{jwt_authentication.api_settings.USER_ID_FIELD: user_id})
+		except Personnel.DoesNotExist:
+			raise AuthenticationFailed(_('User not found'), code='user_not_found')
+
+		return user
+
 class DishesViewSet(viewsets.ModelViewSet):
 	queryset = Dishes.objects.all()
 	serializer_class = DishesSerializers 
-
+	authentication_classes = [SessionAuthentication, BasicAuthentication,TestJWTAuthentication]
+	permission_classes = [WXPermission]
 
 class DishesPageViewSet(viewsets.ModelViewSet):
 	queryset = Dishes.objects.all()
 	serializer_class = DishesSerializers 
 	pagination_class = StandardResultsSetPagination
 
-# class FoodClassificationList(mixins.ListModelMixin,
-# 							mixins.CreateModelMixin,
-# 							generics.GenericAPIView):
-# 	model = FoodClassification
-# 	serializer_class = FoodClassificationSerializers
-
-# 	def get_queryset(self, *args, **kwargs):
-# 		return self.model.objects.all()
-
-# 	def get(self, request, *args, **kwargs):
-# 		return self.list(request, *args, **kwargs)
-
-# 	def post(self, request, *args, **kwargs):
-# 		return self.create(request, *args, **kwargs)
-
-# class FoodClassificationDetail(mixins.RetrieveModelMixin,
-# 					mixins.UpdateModelMixin,
-# 					mixins.DestroyModelMixin,
-# 					generics.GenericAPIView):
-# 	model = FoodClassification
-# 	serializer_class = FoodClassificationSerializers
-
-# 	def get_queryset(self, *args, **kwargs):
-# 		return self.model.objects.all()
-
-# 	def get(self, request, *args, **kwargs):
-# 		return self.retrieve(request, *args, **kwargs)
-
-# 	def put(self, request, *args, **kwargs):
-# 		return self.update(request, *args, **kwargs)
-
-# 	def delete(self, request, *args, **kwargs):
-# 		return self.destroy(request, *args, **kwargs)
-
-# class DisheListPage(mixins.ListModelMixin,
-# 					generics.GenericAPIView):
-# 	model = Dishes
-# 	serializer_class = DishesSerializers
-# 	pagination_class = StandardResultsSetPagination
-
-# 	def get_queryset(self, *args, **kwargs):
-# 		return self.model.objects.all()
-
-# 	def get(self, request, *args, **kwargs):
-# 		return self.list(request, *args, **kwargs)
-
-# class DishesList(mixins.ListModelMixin,
-# 				mixins.CreateModelMixin,
-# 				generics.GenericAPIView):
-
-# 	model = Dishes
-# 	serializer_class = DishesSerializers
-
-# 	def get_queryset(self, *args, **kwargs):
-# 		return self.model.objects.all()
-
-# 	def get(self, request, *args, **kwargs):
-# 		return self.list(request, *args, **kwargs)
-
-# 	def post(self, request, *args, **kwargs):
-# 		return self.create(request, *args, **kwargs)
-
-# class DishesDetail(mixins.RetrieveModelMixin,
-# 					mixins.UpdateModelMixin,
-# 					mixins.DestroyModelMixin,
-# 					generics.GenericAPIView):
-# 	model = Dishes
-# 	serializer_class = DishesSerializers
-
-# 	def get_queryset(self, *args, **kwargs):
-# 		return self.model.objects.all()
-
-# 	def get(self, request, *args, **kwargs):
-# 		print(kwargs)
-# 		return self.retrieve(request, *args, **kwargs)
-
-# 	def put(self, request, *args, **kwargs):
-# 		print(request.data,args,kwargs)
-# 		return self.partial_update(request, *args, **kwargs)
-
-# 	def delete(self, request, *args, **kwargs):
-# 		return self.destroy(request, *args, **kwargs)
+	authentication_classes = [SessionAuthentication, BasicAuthentication,TestJWTAuthentication]
+	permission_classes = [WXPermission]
